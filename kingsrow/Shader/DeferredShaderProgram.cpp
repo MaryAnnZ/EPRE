@@ -66,7 +66,7 @@ void DeferredShaderProgram::useLights(std::vector<LightNode*> lights)
 		linear << "lights[";
 		linear << i;
 		linear << "].Quadratic";
-		glUniform1f(glGetUniformLocation(programId, quadratic.str().c_str()), 1.8);
+		glUniform1f(glGetUniformLocation(programId, quadratic.str().c_str()), 0.1);
 	}
 }
 

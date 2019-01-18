@@ -54,7 +54,7 @@ public:
 	const MeshLoadInfo::LoadInfo* getLoadInfo();
 
 	SceneNode* getParent();
-
+	glm::vec3 getLightColor() { return lightColor; }
 
 	
 	void setLightSet(int i);
@@ -65,8 +65,8 @@ protected:
 	GLuint vao;
 	GLuint vertexBuffer;
 	glm::vec3 playerPosition;
+	glm::vec3 lightColor;
 
-private:
 	aiMesh* triangleMesh;
 
 	

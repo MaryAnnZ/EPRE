@@ -11,6 +11,7 @@
 #include "../SceneGraph/TransformNode.h"
 #include "../SceneGraph/MeshNode.h"
 #include "../SceneGraph/Quad.h"
+#include "../SceneGraph/LightBox.h"
 #include "../SceneGraph/CameraNode.h"
 #include "../SceneGraph/LightNode/LightNode.h"
 #include "../Framebuffer.h"
@@ -42,6 +43,7 @@ public:
 	
 	void draw(MeshNode* node);
 	void draw(Quad* quad, Framebuffer* framebuffer);
+	void draw(LightBox* lightBox);
 
 	GLFWwindow* getWindow();
 	void setLights(std::vector<LightNode*> lights);

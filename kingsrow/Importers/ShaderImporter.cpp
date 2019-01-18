@@ -9,6 +9,7 @@
 #include "..\Shader\SimpleLightingShaderProgram.h"
 #include "..\Shader\DeferredShaderProgram.h"
 #include "..\Shader\GBufferShaderProgram.h"
+#include "..\Shader\LightBoxShaderProgram.h"
 
 ShaderImporter::ShaderImporter()
 {
@@ -114,6 +115,10 @@ ShaderProgram* ShaderImporter::loadShaderProgram(const MeshLoadInfo::ShaderLoadI
 	else if (shader == MeshLoadInfo::GBUFFER_SHADER)
 	{
 		result = new GBufferShaderProgram(shaderProgramID);
+	}
+	else if (shader == MeshLoadInfo::LIGHTBOX_SHADER)
+	{
+		result = new LightBoxShaderProgram(shaderProgramID);
 	}
 	shaderPrograms.insert(std::pair<const MeshLoadInfo::ShaderLoadInfo*, ShaderProgram*>(shader, result));
 	return result;

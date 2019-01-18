@@ -99,6 +99,12 @@
     <ClCompile Include="Shader\DeferredShaderProgram.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Shader\LightBoxShaderProgram.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneGraph\LightBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Shaders\test.vert" />
@@ -201,6 +207,12 @@
     <ClInclude Include="Shader\DeferredShaderProgram.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Shader\LightBoxShaderProgram.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneGraph\LightBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader\Vertex\BloomVertexShader.glsl" />
@@ -230,5 +242,7 @@
     <None Include="Shader\Fragment\gBuffer.fragmentshader" />
     <None Include="Shader\Vertex\deferredShader.vertexshader" />
     <None Include="Shader\Vertex\gBuffer.vertexshader" />
+    <None Include="Shader\Vertex\lightBox.vertexshader" />
+    <None Include="Shader\Fragment\lightBox.fragmentshader" />
   </ItemGroup>
 </Project>

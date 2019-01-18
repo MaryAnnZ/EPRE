@@ -27,13 +27,13 @@
 #include "SceneGraph\LightNode\PointLightNode.h"
 #include "SceneGraph\LightNode\DirectionalLightNode.h"
 #include "SceneGraph\LightNode\SpotLightNode.h"
+#include "SceneGraph\LightBox.h"
 #include "Texture\SamplerStateEnum.h"
 #include "Texture\MipmapStateEnum.h"
 #include "Framebuffer.h"
 
 
 int main() {
-
 	int viewPortResX = 1024;
 	int viewPortResY = 756;
 	Renderer* renderer = Renderer::getInstance();
@@ -55,10 +55,14 @@ int main() {
 	//this way we have a list of cameras and can switch between them as we want just by doing activeCamera = cameraList.find("whichever camera we want")->second;
 	cameraList.insert(std::pair<std::string, CameraNode*>(std::string("player camera"), activeCamera));
 
+	SceneNode* sceneGraph = new SceneNode(generateUuid(), NodeType::ROOT_NODE);
+	sceneGraph->setParent(nullptr);
+
 
 	std::vector<LightNode*> lights;
 	const unsigned int NR_LIGHTS = 32;
 	srand(13);
+	std::vector<LightBox*> lightBoxes;
 	for (unsigned int i = 0; i < NR_LIGHTS; i++)
 	{
 		
@@ -71,7 +75,18 @@ int main() {
 		float gColor = ((rand() % 100) / 200.0f) + 0.5; // between 0.5 and 1.0
 		float bColor = ((rand() % 100) / 200.0f) + 0.5; // between 0.5 and 1.0
 
-		lights.push_back(new PointLightNode(generateUuid(), glm::vec3(xPos, yPos, zPos), 1.0f, glm::vec3(rColor, gColor, bColor), LightType::POINT_LIGHT));
+		lights.push_back(new PointLightNode(generateUuid(), glm::vec3(xPos, 1, zPos), 0.10f, glm::vec3(rColor, gColor, bColor), LightType::POINT_LIGHT));
+		LightBox* lightBox = new LightBox(generateUuid(), glm::vec3(rColor, gColor, bColor));
+		lightBox->prepareForRendering();
+		lightBoxes.push_back(lightBox);
+		SceneNode* transformNode = new TransformNode(generateUuid(), glm::mat4(
+			0.1, 0, 0, 0,
+			0, 0.1, 0, 0,
+			0, 0, 0.1, 0,
+			xPos, 1, zPos, 1));
+		transformNode->attachChild(lightBox);
+		sceneGraph->attachChild(transformNode);
+
 	}
 	////room 1
 	//LightNode* firstLight = new PointLightNode(generateUuid(), glm::vec3(2.0, 2, -3), 1.0f, glm::vec3(1, 1, 1), LightType::POINT_LIGHT);
@@ -90,32 +105,43 @@ int main() {
 	renderer->setLights(lightMap.find(0)->second);
 
 	Quad* quad = new Quad(generateUuid());
-	quad->prepareForRendering();
+	quad->prepareForRendering();	
+	
 
-	MeshNode* firstMesh = MeshImporter::getInstance()->getMesh(MeshLoadInfo::NANO);
-	firstMesh->prepareForRendering();
+	
 
 	std::vector<MeshNode*> drawArray;
-	drawArray.push_back(firstMesh);
+	for (unsigned int i = 0; i < NR_LIGHTS; i++) {
+		MeshNode* mesh = MeshImporter::getInstance()->getMesh(MeshLoadInfo::NANO);
+		mesh->prepareForRendering();
+		drawArray.push_back(mesh);
 
-	SceneNode* sceneGraph = new SceneNode(generateUuid(), NodeType::ROOT_NODE);
-	sceneGraph->setParent(nullptr);
+		// calculate slightly random offsets
+		float xPos = ((rand() % 100) / 100.0) * 6.0 - 3.0;
+		float yPos = ((rand() % 100) / 100.0) * 6.0 - 4.0;
+		float zPos = ((rand() % 100) / 100.0) * 6.0 - 3.0;
 
+		// also calculate random color
+		float xScale = ((rand() % 100) / 200.0f); // between 0.5 and 1.0
+		float yScale = ((rand() % 100) / 200.0f); // between 0.5 and 1.0
+		float zScale = ((rand() % 100) / 200.0f); // between 0.5 and 1.0
 
-	SceneNode* transformNodeTable = new TransformNode(generateUuid(), glm::mat4(
-		1, 0, 0, 0,
-		0, 1, 0, 0,
-		0, 0, 1, 0,
-		0, 0, 0, 1));
-	
-	transformNodeTable->attachChild(firstMesh);
-	sceneGraph->attachChild(transformNodeTable);
+		SceneNode* transformNode = new TransformNode(generateUuid(), glm::mat4(
+			xScale, 0, 0, 0,
+			0, yScale, 0, 0,
+			0, 0, zScale, 0,
+			xPos, 0.8, zPos, 1));
+
+		transformNode->attachChild(mesh);
+		sceneGraph->attachChild(transformNode);
+
+	}
 
 	SceneNode* playerTransform = new TransformNode(generateUuid(), glm::mat4(
 		1, 0, 0, 0,
 		0, 1, 0, 0,
 		0, 0, 1, 0,
-		0, 0, 0, 1));
+		0, 0, -2, 1));
 
 	PlayerNode* player = new PlayerNode(generateUuid());
 	player->setCamera(activeCamera);
@@ -168,6 +194,12 @@ int main() {
 		//lighting pass
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		quad->draw(player->getPosition(), framebuffer);
+
+		framebuffer->bindDepthBuffer();
+
+		for (LightBox* lightBox : lightBoxes) {
+			lightBox->draw(viewMatrix, projectionMatrix);
+		}
 
 		glfwSwapBuffers(renderer->getWindow());
 		glfwPollEvents();

@@ -17,6 +17,8 @@ public:
 	unsigned int getAlbedoSpec() { return gAlbedoSpec; }
 	unsigned int getDepth() { return rboDepth; }
 
+	void bindDepthBuffer();
+
 	void renderGeometryPass();
 	void renderLightingPass();
 
@@ -27,5 +29,6 @@ private:
 	unsigned int gBuffer;
 	unsigned int gPosition, gNormal, gAlbedoSpec;
 	unsigned int rboDepth;
+	int screenWidth, screenHeight;
 };
 

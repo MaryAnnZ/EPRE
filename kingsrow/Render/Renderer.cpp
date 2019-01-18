@@ -151,6 +151,15 @@ void Renderer::draw(Quad * quad, Framebuffer* framebuffer)
 	glUseProgram(0);
 }
 
+void Renderer::draw(LightBox * lightBox)
+{
+	this->useShader(lightBox, getLights(lightBox));
+	bindVertexArray(lightBox->getVao());
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	bindVertexArray(0);
+	glUseProgram(0);
+}
+
 
 void Renderer::linkShader(ShaderProgram* shader)
 {

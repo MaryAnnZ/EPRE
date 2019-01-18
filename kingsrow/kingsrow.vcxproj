@@ -138,6 +138,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="SceneGraph\LightBox.cpp" />
+    <ClCompile Include="Shader\LightBoxShaderProgram.cpp" />
     <ClCompile Include="SceneGraph\Quad.cpp" />
     <ClCompile Include="Shader\DeferredShaderProgram.cpp" />
     <ClCompile Include="Framebuffer.cpp" />
@@ -167,6 +169,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="SceneGraph\LightBox.h" />
+    <ClInclude Include="Shader\LightBoxShaderProgram.h" />
     <ClInclude Include="SceneGraph\Quad.h" />
     <ClInclude Include="Shader\DeferredShaderProgram.h" />
     <ClInclude Include="Framebuffer.h" />
@@ -213,6 +217,7 @@
     <None Include="Shader\Fragment\DirShadowMappingFragmentShader.fragmentshader" />
     <None Include="Shader\Fragment\gBuffer.fragmentshader" />
     <None Include="Shader\Fragment\HighPassFragmentShader.glsl" />
+    <None Include="Shader\Fragment\lightBox.fragmentshader" />
     <None Include="Shader\Fragment\RenderSurfaceFragmentShader.glsl" />
     <None Include="Shader\Fragment\ShadowMappingFragmentShader.fragmentshader" />
     <None Include="Shader\Fragment\SimpleFragmentShader.fragmentshader" />
@@ -227,6 +232,7 @@
     <None Include="Shader\Vertex\DirShadowMappingVertexShader.vertexshader" />
     <None Include="Shader\Vertex\gBuffer.vertexshader" />
     <None Include="Shader\Vertex\HighPassVertexShader.glsl" />
+    <None Include="Shader\Vertex\lightBox.vertexshader" />
     <None Include="Shader\Vertex\RenderSurfaceVertexShader.glsl" />
     <None Include="Shader\Vertex\ShadowMappingVertexShader.vertexshader" />
     <None Include="Shader\Vertex\SimpleVertexShader.vertexshader" />

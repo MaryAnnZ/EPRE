@@ -6,6 +6,9 @@
 
 Framebuffer::Framebuffer(int width, int height)
 {	
+	screenWidth = width;
+	screenHeight = height;
+
 	glGenFramebuffers(1, &gBuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
 	// position color buffer
@@ -47,6 +50,14 @@ Framebuffer::Framebuffer(int width, int height)
 
 Framebuffer::~Framebuffer()
 {
+}
+
+void Framebuffer::bindDepthBuffer()
+{
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, gBuffer);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	glBlitFramebuffer(0, 0, screenWidth, screenHeight, 0, 0, screenWidth, screenHeight, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void Framebuffer::renderGeometryPass()

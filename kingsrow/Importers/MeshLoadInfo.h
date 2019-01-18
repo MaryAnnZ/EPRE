@@ -28,6 +28,7 @@ public:
 	static const ShaderLoadInfo* SIMPLE_LIGHTING_SHADER;
 	static const ShaderLoadInfo* DEFERRED_SHADER;
 	static const ShaderLoadInfo* GBUFFER_SHADER;
+	static const ShaderLoadInfo* LIGHTBOX_SHADER;
 
 
 	struct LoadInfo {
