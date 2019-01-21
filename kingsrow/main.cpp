@@ -15,6 +15,7 @@
 #include <glm\gtc\matrix_transform.hpp>
 #include <map>
 #include <sstream>
+#include <fstream>
 
 #include "InputHandler.h"
 #include "Render\Renderer.h"
@@ -34,8 +35,88 @@
 
 
 int main() {
+
 	int viewPortResX = 1024;
 	int viewPortResY = 756;
+	bool forwardRender = false;
+	int NR_LIGHTS = 100;
+	int NR_OBJECTS = 2;
+	float intensity = 1.0;
+	float renderLights = false;
+
+
+
+	std::ifstream inputFile("../kingsrow/Assets/config.txt");
+	std::string line;
+	int linecount = 0;
+	/*
+	0 - Deferred Shading (0), Forward Shading(1)
+	1 - NR_LIGHT (<= 100)
+	2 - Light intensity(float)
+	3 - NR_OBJECTS
+	4 - Viewport width
+	5 - Viewport height
+	*/
+	while (std::getline(inputFile, line)) {
+		if (line.length() <= 0) {
+			continue;
+		}
+		if (line.at(0) == '#') { //this is a commentar
+			continue;
+		}
+		switch (linecount)
+		{
+		case 0: {
+			if (line.at(0) == '0') {
+				forwardRender = false;
+			}
+			else if (line.at(0) == '1') {
+				forwardRender = true;
+			}
+			break;
+		}
+		case 1: {
+			NR_LIGHTS = std::stoi(line);
+			break;
+		}
+		case 2: {
+			intensity = std::atof(line.c_str());
+			break;
+		}
+		case 3: {
+			NR_OBJECTS = std::stoi(line);
+			break;
+		}
+		case 4: {
+			viewPortResX = std::stoi(line);
+			break;
+		}
+		case 5: {
+			viewPortResY = std::stoi(line);
+			break;
+		}
+		case 6: {
+			if (line.at(0) == '0') {
+				renderLights = false;
+			}
+			else if (line.at(0) == '1') {
+				renderLights = true;
+			}
+			break;
+		}
+		default:
+			break;
+		}
+		linecount++;
+	}
+	std::cout << forwardRender << std::endl;
+	std::cout << NR_LIGHTS << std::endl;
+	std::cout << intensity << std::endl;
+	std::cout << NR_OBJECTS << std::endl;
+	std::cout << viewPortResX << std::endl;
+	std::cout << viewPortResY << std::endl;
+	std::cout << renderLights << std::endl;
+
 	Renderer* renderer = Renderer::getInstance();
 	if (renderer->init(viewPortResX, viewPortResY) == -1) {
 		return -1;
@@ -60,10 +141,9 @@ int main() {
 
 
 	std::vector<LightNode*> lights;
-	const unsigned int NR_LIGHTS = 32;
 	srand(13);
 	std::vector<LightBox*> lightBoxes;
-	for (unsigned int i = 0; i < NR_LIGHTS; i++)
+	for (unsigned int i = 0; i < std::min(NR_LIGHTS, 100); i++)
 	{
 		
 		// calculate slightly random offsets
@@ -75,7 +155,7 @@ int main() {
 		float gColor = ((rand() % 100) / 200.0f) + 0.5; // between 0.5 and 1.0
 		float bColor = ((rand() % 100) / 200.0f) + 0.5; // between 0.5 and 1.0
 
-		lights.push_back(new PointLightNode(generateUuid(), glm::vec3(xPos, 1, zPos), 0.10f, glm::vec3(rColor, gColor, bColor), LightType::POINT_LIGHT));
+		lights.push_back(new PointLightNode(generateUuid(), glm::vec3(xPos, yPos, zPos), intensity, glm::vec3(rColor, gColor, bColor), LightType::POINT_LIGHT));
 		LightBox* lightBox = new LightBox(generateUuid(), glm::vec3(rColor, gColor, bColor));
 		lightBox->prepareForRendering();
 		lightBoxes.push_back(lightBox);
@@ -83,7 +163,7 @@ int main() {
 			0.1, 0, 0, 0,
 			0, 0.1, 0, 0,
 			0, 0, 0.1, 0,
-			xPos, 1, zPos, 1));
+			xPos, yPos, zPos, 1));
 		transformNode->attachChild(lightBox);
 		sceneGraph->attachChild(transformNode);
 
@@ -110,11 +190,15 @@ int main() {
 
 	
 
-	std::vector<MeshNode*> drawArray;
-	for (unsigned int i = 0; i < NR_LIGHTS; i++) {
-		MeshNode* mesh = MeshImporter::getInstance()->getMesh(MeshLoadInfo::NANO);
-		mesh->prepareForRendering();
-		drawArray.push_back(mesh);
+	std::vector<MeshNode*> drawArrayDeferred;
+	std::vector<MeshNode*> drawArrayForward;
+	for (unsigned int i = 0; i < NR_OBJECTS; i++) {
+		MeshNode* meshDeferred = MeshImporter::getInstance()->getMesh(MeshLoadInfo::CUBE_DEFERRED);
+		MeshNode* meshForward = MeshImporter::getInstance()->getMesh(MeshLoadInfo::CUBE_FORWARD);
+		meshDeferred->prepareForRendering();
+		meshForward->prepareForRendering();
+		drawArrayDeferred.push_back(meshDeferred);
+		drawArrayForward.push_back(meshForward);
 
 		// calculate slightly random offsets
 		float xPos = ((rand() % 100) / 100.0) * 6.0 - 3.0;
@@ -132,7 +216,8 @@ int main() {
 			0, 0, zScale, 0,
 			xPos, 0.8, zPos, 1));
 
-		transformNode->attachChild(mesh);
+		transformNode->attachChild(meshDeferred);
+		transformNode->attachChild(meshForward);
 		sceneGraph->attachChild(transformNode);
 
 	}
@@ -184,21 +269,31 @@ int main() {
 		glm::mat4 viewProjectionMatrix = projectionMatrix * viewMatrix;
 		glm::vec3 playerPosition = glm::vec3(glm::inverse(viewMatrix)[0][3], glm::inverse(viewMatrix)[1][3], glm::inverse(viewMatrix)[2][3]);
 
-		//geometry pass
-		framebuffer->renderGeometryPass();
-		for (MeshNode* node : drawArray) {
-			//-------------draw-------------------
-			node->draw(viewMatrix, projectionMatrix, viewProjectionMatrix, player->getPosition());
+		if (forwardRender) {
+			for (MeshNode* node : drawArrayForward) {
+				//-------------draw-------------------
+				node->draw(viewMatrix, projectionMatrix, viewProjectionMatrix, player->getPosition());
+			}
 		}
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		//lighting pass
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		quad->draw(player->getPosition(), framebuffer);
+		else {
+			//geometry pass
+			framebuffer->renderGeometryPass();
+			for (MeshNode* node : drawArrayDeferred) {
+				//-------------draw-------------------
+				node->draw(viewMatrix, projectionMatrix, viewProjectionMatrix, player->getPosition());
+			}
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			//lighting pass
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			quad->draw(player->getPosition(), framebuffer);
 
-		framebuffer->bindDepthBuffer();
+			if (renderLights) {
+				framebuffer->bindDepthBuffer();
 
-		for (LightBox* lightBox : lightBoxes) {
-			lightBox->draw(viewMatrix, projectionMatrix);
+				for (LightBox* lightBox : lightBoxes) {
+					lightBox->draw(viewMatrix, projectionMatrix);
+				}
+			}
 		}
 
 		glfwSwapBuffers(renderer->getWindow());

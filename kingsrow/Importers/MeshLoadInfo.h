@@ -40,5 +40,6 @@ public:
 		LoadInfo(const std::string& mPath, const std::string& tPath, const ShaderLoadInfo* sInfo, const CollisionType cType, const CollisionShapeType cSType) : meshPath(mPath), texturePath(tPath), shaderInfo(sInfo), collisionType(cType), collisionShapeType(cSType){}
 	};
 	static const LoadInfo* TABLE;
-	static const LoadInfo* NANO;
+	static const LoadInfo* CUBE_DEFERRED;
+	static const LoadInfo* CUBE_FORWARD;
 };

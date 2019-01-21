@@ -23,7 +23,14 @@ void DeferredShaderProgram::loadUniformLocations()
 void DeferredShaderProgram::fillUniformLocation(MeshNode* node, std::vector<LightNode*> lights)
 {
 	useLights(lights);
-
+	//set invalid lights
+	for (unsigned int i = lights.size(); i < 100; i++) {
+		std::stringstream valid;
+		valid << "lights[";
+		valid << i;
+		valid << "].valid";
+		glUniform1i(glGetUniformLocation(programId, valid.str().c_str()), false);
+	}
 	glm::vec3 pos = node->getPlayerPosition();
 	glUniform3f(locationViewPos, pos.x, pos.y, pos.z);
 }
@@ -51,22 +58,37 @@ void DeferredShaderProgram::useLights(std::vector<LightNode*> lights)
 		position << "lights[";
 		position << i;
 		position << "].Position";
-		glUniform3f(glGetUniformLocation(programId, position.str().c_str()), lights.at(i)->getPosition().x, lights.at(i)->getPosition().y, lights.at(i)->getPosition().z);
+		GLuint positionLoc = glGetUniformLocation(programId, position.str().c_str());
+		glUniform3f(positionLoc, lights.at(i)->getPosition().x, lights.at(i)->getPosition().y, lights.at(i)->getPosition().z);
 		std::stringstream color;
 		color << "lights[";
 		color << i;
 		color << "].Color";
-		glUniform3f(glGetUniformLocation(programId, color.str().c_str()), lights.at(i)->getColor().x, lights.at(i)->getColor().y, lights.at(i)->getColor().z);
+		GLuint colorLoc = glGetUniformLocation(programId, color.str().c_str());
+		glUniform3f(colorLoc, lights.at(i)->getColor().x, lights.at(i)->getColor().y, lights.at(i)->getColor().z);
 		std::stringstream linear;
 		linear << "lights[";
 		linear << i;
 		linear << "].Linear";
-		glUniform1f(glGetUniformLocation(programId, linear.str().c_str()), 0.7);
+		GLuint linearLoc = glGetUniformLocation(programId, linear.str().c_str());
+		glUniform1f(linearLoc, 0.7);
 		std::stringstream quadratic;
-		linear << "lights[";
-		linear << i;
-		linear << "].Quadratic";
-		glUniform1f(glGetUniformLocation(programId, quadratic.str().c_str()), 0.1);
+		quadratic << "lights[";
+		quadratic << i;
+		quadratic << "].Quadratic";
+		GLuint quadraticLoc = glGetUniformLocation(programId, quadratic.str().c_str());
+		glUniform1f(quadraticLoc, 0.1);
+		std::stringstream intensity;
+		intensity << "lights[";
+		intensity << i;
+		intensity << "].Intensity";
+		GLuint intensityLoc = glGetUniformLocation(programId, intensity.str().c_str());
+		glUniform1f(intensityLoc, lights.at(i)->getIntensity());
+		std::stringstream valid;
+		valid << "lights[";
+		valid << i;
+		valid << "].valid";
+		glUniform1i(glGetUniformLocation(programId, valid.str().c_str()), true);
 	}
 }
 

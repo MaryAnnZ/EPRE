@@ -65,7 +65,6 @@ void MeshNode::prepareForRendering()
 	}
 
 	if (triangleMesh->HasNormals()){
-		std::cout << "Filling normals" << std::endl;
 		renderer->fillBuffer(normalBuffer, GL_ARRAY_BUFFER, sizeof(float) * 3 * triangleMesh->mNumVertices, triangleMesh->mNormals, GL_STATIC_DRAW);
 		renderer->setVertexAttribPointer(normalAttribPointer, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	}

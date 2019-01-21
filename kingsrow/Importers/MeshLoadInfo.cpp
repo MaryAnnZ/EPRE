@@ -8,4 +8,5 @@ const MeshLoadInfo::ShaderLoadInfo* MeshLoadInfo::LIGHTBOX_SHADER = new ShaderLo
 
 
 const MeshLoadInfo::LoadInfo* MeshLoadInfo::TABLE = new LoadInfo(std::string("../kingsrow/Assets/Models/Table.dae"), std::string("../kingsrow/Assets/Models/duck_textures/rainbow.jpg"), SIMPLE_LIGHTING_SHADER, MeshLoadInfo::CollisionType::DYNAMIC, MeshLoadInfo::CollisionShapeType::CONVEX);
-const MeshLoadInfo::LoadInfo* MeshLoadInfo::NANO = new LoadInfo(std::string("../kingsrow/Assets/Models/cube.dae"), std::string("../kingsrow/Assets/Models/duck_textures/diff.jpg"), GBUFFER_SHADER, MeshLoadInfo::CollisionType::DYNAMIC, MeshLoadInfo::CollisionShapeType::CONVEX);
+const MeshLoadInfo::LoadInfo* MeshLoadInfo::CUBE_DEFERRED = new LoadInfo(std::string("../kingsrow/Assets/Models/cubeUV.dae"), std::string("../kingsrow/Assets/Models/duck_textures/diff.jpg"), GBUFFER_SHADER, MeshLoadInfo::CollisionType::DYNAMIC, MeshLoadInfo::CollisionShapeType::CONVEX); 
+const MeshLoadInfo::LoadInfo* MeshLoadInfo::CUBE_FORWARD = new LoadInfo(std::string("../kingsrow/Assets/Models/cubeUV.dae"), std::string("../kingsrow/Assets/Models/duck_textures/diff.jpg"), SIMPLE_LIGHTING_SHADER, MeshLoadInfo::CollisionType::DYNAMIC, MeshLoadInfo::CollisionShapeType::CONVEX);

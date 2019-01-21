@@ -13,8 +13,10 @@ struct Light {
     
     float Linear;
     float Quadratic;
+	float Intensity;
+	bool valid;
 };
-const int NR_LIGHTS = 32;
+const int NR_LIGHTS = 100;
 uniform Light lights[NR_LIGHTS];
 uniform vec3 viewPos;
 
@@ -31,6 +33,9 @@ void main()
     vec3 viewDir  = normalize(viewPos - FragPos);
     for(int i = 0; i < NR_LIGHTS; ++i)
     {
+		if (!lights[i].valid) {
+			break;
+		}
         // diffuse
         vec3 lightDir = normalize(lights[i].Position - FragPos);
         vec3 diffuse = max(dot(Normal, lightDir), 0.0) * Diffuse * lights[i].Color;
@@ -43,7 +48,7 @@ void main()
         float attenuation = 1.0 / (1.0 + lights[i].Linear * distance + lights[i].Quadratic * distance * distance);
         diffuse *= attenuation;
         specular *= attenuation;
-        lighting += diffuse + specular;        
+        lighting += (diffuse + specular) * lights[i].Intensity;        
     }
     FragColor = vec4(lighting, 1.0);
 }

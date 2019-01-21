@@ -25,6 +25,14 @@ void SimpleLightingShaderProgram::loadUniformLocations()
 void SimpleLightingShaderProgram::fillUniformLocation(MeshNode* node, std::vector<LightNode*> lights)
 {
 	this->useLights(lights);
+	//set invalid lights
+	for (unsigned int i = lights.size(); i < 100; i++) {
+		std::stringstream valid;
+		valid << "lights[";
+		valid << i;
+		valid << "].valid";
+		glUniform1i(glGetUniformLocation(programId, valid.str().c_str()), false);
+	}
 	glm::mat4 MVP = node->getModelViewProjectionMatrix();
 	glUniformMatrix4fv(locationMVP, 1, GL_FALSE, &MVP[0][0]);
 	this->bindTextures(node);
@@ -72,6 +80,11 @@ void SimpleLightingShaderProgram::useLights(std::vector<LightNode*> lights)
 		type << i;
 		type << "].type";
 		//auto loc4 = glGetUniformLocation(programId, type.str().c_str());
+		std::stringstream valid;
+		valid << "lights[";
+		valid << i;
+		valid << "].valid";
+		glUniform1i(glGetUniformLocation(programId, valid.str().c_str()), true);
 		if (lights.at(i)->getLightType() == POINT_LIGHT) {
 			glUniform1f(glGetUniformLocation(programId, type.str().c_str()), 1.0f);
 		}
