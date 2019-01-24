@@ -33,6 +33,8 @@
 #include "Texture\MipmapStateEnum.h"
 #include "Framebuffer.h"
 
+#define PI 3.14159265
+
 
 int main() {
 
@@ -155,7 +157,7 @@ int main() {
 		float gColor = ((rand() % 100) / 200.0f) + 0.5; // between 0.5 and 1.0
 		float bColor = ((rand() % 100) / 200.0f) + 0.5; // between 0.5 and 1.0
 
-		lights.push_back(new PointLightNode(generateUuid(), glm::vec3(xPos, yPos, zPos), intensity, glm::vec3(rColor, gColor, bColor), LightType::POINT_LIGHT));
+		lights.push_back(new PointLightNode(generateUuid(), glm::vec3(xPos, std::max(yPos, 0.0f), zPos), intensity, glm::vec3(rColor, gColor, bColor), LightType::POINT_LIGHT));
 		LightBox* lightBox = new LightBox(generateUuid(), glm::vec3(rColor, gColor, bColor));
 		lightBox->prepareForRendering();
 		lightBoxes.push_back(lightBox);
@@ -163,7 +165,7 @@ int main() {
 			0.1, 0, 0, 0,
 			0, 0.1, 0, 0,
 			0, 0, 0.1, 0,
-			xPos, yPos, zPos, 1));
+			xPos, std::max(yPos, 0.0f), zPos, 1));
 		transformNode->attachChild(lightBox);
 		sceneGraph->attachChild(transformNode);
 
@@ -192,6 +194,31 @@ int main() {
 
 	std::vector<MeshNode*> drawArrayDeferred;
 	std::vector<MeshNode*> drawArrayForward;
+
+	MeshNode* planeDeferred = MeshImporter::getInstance()->getMesh(MeshLoadInfo::PLANE_DEFERRED);
+	MeshNode* planeForward = MeshImporter::getInstance()->getMesh(MeshLoadInfo::PLANE_FORWARD);
+	planeDeferred->prepareForRendering();
+	planeForward->prepareForRendering();
+	drawArrayDeferred.push_back(planeDeferred);
+	drawArrayForward.push_back(planeForward);
+
+
+	SceneNode* transformNode = new TransformNode(generateUuid(), glm::mat4(
+			1, 0, 0, 0,
+			0, cos(90 * PI / 180), -sin(90 * PI / 180), 0,
+			0, sin(90 * PI / 180), cos(90 * PI / 180), 0,
+			0, 0, 0, 1));
+	SceneNode* scaleTransform = new TransformNode(generateUuid(), glm::mat4(
+		10, 0, 0, 0,
+		0, 10, 0, 0,
+		0, 0, 10, 0,
+		0, 0, 0, 1));
+
+	transformNode->attachChild(planeDeferred);
+	transformNode->attachChild(planeForward);
+	scaleTransform->attachChild(transformNode);
+	sceneGraph->attachChild(scaleTransform);
+
 	for (unsigned int i = 0; i < NR_OBJECTS; i++) {
 		MeshNode* meshDeferred = MeshImporter::getInstance()->getMesh(MeshLoadInfo::CUBE_DEFERRED);
 		MeshNode* meshForward = MeshImporter::getInstance()->getMesh(MeshLoadInfo::CUBE_FORWARD);
@@ -214,7 +241,7 @@ int main() {
 			xScale, 0, 0, 0,
 			0, yScale, 0, 0,
 			0, 0, zScale, 0,
-			xPos, 0.8, zPos, 1));
+			xPos, std::max(yPos, 0.0f), zPos, 1));
 
 		transformNode->attachChild(meshDeferred);
 		transformNode->attachChild(meshForward);
@@ -248,6 +275,25 @@ int main() {
 	//gameloop
 	while (!input->esc && glfwWindowShouldClose(renderer->getWindow()) == 0) {
 		input->update(renderer->getWindow());
+
+		if (input->renderLights) {
+			renderLights = !renderLights;
+		}
+		if (input->renderMode) {
+			forwardRender = !forwardRender;
+		}
+		if (input->intUp) {
+			intensity += 0.1;
+			for (LightNode* light : lights) {
+				light->setIntensity(intensity);
+			}
+		}
+		if (input->intDown) {
+			intensity -= 0.1;
+			for (LightNode* light : lights) {
+				light->setIntensity(intensity);
+			}
+		}
 
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
