@@ -20,6 +20,7 @@ void SimpleLightingShaderProgram::loadUniformLocations()
 	locationTexture = glGetUniformLocation(programId, "myTextureSampler");
 	locationV = glGetUniformLocation(programId, "V");
 	locationM = glGetUniformLocation(programId, "M");
+	locationCamPos = glGetUniformLocation(programId, "camPos");
 }
 
 void SimpleLightingShaderProgram::fillUniformLocation(MeshNode* node, std::vector<LightNode*> lights)
@@ -40,6 +41,8 @@ void SimpleLightingShaderProgram::fillUniformLocation(MeshNode* node, std::vecto
 	glUniformMatrix4fv(locationM, 1, GL_FALSE, &M[0][0]);
 	glm::mat4 V = node->getViewMatrix();
 	glUniformMatrix4fv(locationV, 1, GL_FALSE, &V[0][0]);
+	glm::vec3 playerPos = node->getPlayerPosition();
+	glUniform3f(locationCamPos, playerPos.x, playerPos.y, playerPos.z);
 
 }
 

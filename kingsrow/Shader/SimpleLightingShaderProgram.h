@@ -19,6 +19,7 @@ private:
 	GLuint locationM;
 	GLuint locationTexture;
 	GLuint locationLight;
+	GLuint locationCamPos;
 	
 	void useLights(std::vector<LightNode*> lights);
 	void bindTextures(MeshNode* node);
