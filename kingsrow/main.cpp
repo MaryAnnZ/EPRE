@@ -45,6 +45,7 @@ int main() {
 	int NR_OBJECTS = 2;
 	float intensity = 1.0;
 	float renderLights = false;
+	bool attenuationOn = false;
 
 
 
@@ -106,6 +107,15 @@ int main() {
 			}
 			break;
 		}
+		case 8: {
+			if (line.at(0) == '0') {
+				attenuationOn = false;
+			}
+			else if (line.at(0) == '1') {
+				attenuationOn = true;
+			}
+			break;
+		}
 		default:
 			break;
 		}
@@ -118,6 +128,7 @@ int main() {
 	std::cout << viewPortResX << std::endl;
 	std::cout << viewPortResY << std::endl;
 	std::cout << renderLights << std::endl;
+	std::cout << attenuationOn << std::endl;
 
 	Renderer* renderer = Renderer::getInstance();
 	if (renderer->init(viewPortResX, viewPortResY) == -1) {
@@ -148,16 +159,16 @@ int main() {
 	for (unsigned int i = 0; i < std::min(NR_LIGHTS, 100); i++)
 	{
 		
-		// calculate slightly random offsets
+		// random position
 		float xPos = ((rand() % 100) / 100.0) * 6.0 - 3.0;
 		float yPos = ((rand() % 100) / 100.0) * 6.0 - 4.0;
 		float zPos = ((rand() % 100) / 100.0) * 6.0 - 3.0;
-		// also calculate random color
+		//random color
 		float rColor = ((rand() % 100) / 200.0f) + 0.5; // between 0.5 and 1.0
 		float gColor = ((rand() % 100) / 200.0f) + 0.5; // between 0.5 and 1.0
 		float bColor = ((rand() % 100) / 200.0f) + 0.5; // between 0.5 and 1.0
 
-		lights.push_back(new PointLightNode(generateUuid(), glm::vec3(xPos, std::max(yPos, 0.0f), zPos), intensity, glm::vec3(rColor, gColor, bColor), LightType::POINT_LIGHT));
+		lights.push_back(new PointLightNode(generateUuid(), glm::vec3(xPos, std::max(yPos, 0.5f), zPos), intensity, glm::vec3(rColor, gColor, bColor), LightType::POINT_LIGHT));
 		LightBox* lightBox = new LightBox(generateUuid(), glm::vec3(rColor, gColor, bColor));
 		lightBox->prepareForRendering();
 		lightBoxes.push_back(lightBox);
@@ -165,21 +176,12 @@ int main() {
 			0.1, 0, 0, 0,
 			0, 0.1, 0, 0,
 			0, 0, 0.1, 0,
-			xPos, std::max(yPos, 0.0f), zPos, 1));
+			xPos, std::max(yPos, 0.5f), zPos, 1));
 		transformNode->attachChild(lightBox);
 		sceneGraph->attachChild(transformNode);
 
 	}
-	////room 1
-	//LightNode* firstLight = new PointLightNode(generateUuid(), glm::vec3(2.0, 2, -3), 1.0f, glm::vec3(1, 1, 1), LightType::POINT_LIGHT);
-	//LightNode* secondLight = new SpotLightNode(generateUuid(), glm::vec3(2.0, 1.0, -1), 1.0f, glm::vec3(1, 1, 1), glm::vec3(0, -1, 0), glm::vec2(0.5, 0.8), LightType::SPOT_LIGHT);
-	//LightNode* secondLight2 = new SpotLightNode(generateUuid(), glm::vec3(2.0, 1.0, -1), 0.0f, glm::vec3(1, 0, 1), glm::vec3(0, -1, 0), glm::vec2(0.5, 0.8), LightType::SPOT_LIGHT);
-	//LightNode* secondLight3 = new SpotLightNode(generateUuid(), glm::vec3(2.0, 1.0, -1), 0.0f, glm::vec3(1, 0, 1), glm::vec3(0, -1, 0), glm::vec2(0.5, 0.8), LightType::SPOT_LIGHT);
-
-	//lights.push_back(firstLight);
-	//lights.push_back(secondLight);
-	//lights.push_back(secondLight2);
-	//lights.push_back(secondLight3);
+	
 
 	std::map<int, std::vector<LightNode*>> lightMap;
 	lightMap.insert(std::pair<int, std::vector<LightNode*>>(0, lights));
@@ -196,6 +198,7 @@ int main() {
 	std::vector<MeshNode*> drawArrayForward;
 
 	MeshNode* planeDeferred = MeshImporter::getInstance()->getMesh(MeshLoadInfo::PLANE_DEFERRED);
+	planeDeferred->setAttenuationOn(attenuationOn);
 	MeshNode* planeForward = MeshImporter::getInstance()->getMesh(MeshLoadInfo::PLANE_FORWARD);
 	planeDeferred->prepareForRendering();
 	planeForward->prepareForRendering();
@@ -221,21 +224,21 @@ int main() {
 
 	for (unsigned int i = 0; i < NR_OBJECTS; i++) {
 		MeshNode* meshDeferred = MeshImporter::getInstance()->getMesh(MeshLoadInfo::CUBE_DEFERRED);
+		meshDeferred->setAttenuationOn(attenuationOn);
 		MeshNode* meshForward = MeshImporter::getInstance()->getMesh(MeshLoadInfo::CUBE_FORWARD);
 		meshDeferred->prepareForRendering();
 		meshForward->prepareForRendering();
 		drawArrayDeferred.push_back(meshDeferred);
 		drawArrayForward.push_back(meshForward);
 
-		// calculate slightly random offsets
 		float xPos = ((rand() % 100) / 100.0) * 6.0 - 3.0;
 		float yPos = ((rand() % 100) / 100.0) * 6.0 - 4.0;
 		float zPos = ((rand() % 100) / 100.0) * 6.0 - 3.0;
 
-		// also calculate random color
-		float xScale = ((rand() % 100) / 200.0f); // between 0.5 and 1.0
-		float yScale = ((rand() % 100) / 200.0f); // between 0.5 and 1.0
-		float zScale = ((rand() % 100) / 200.0f); // between 0.5 and 1.0
+		//calculate scale
+		float xScale = ((rand() % 100) / 200.0f); 
+		float yScale = ((rand() % 100) / 200.0f); 
+		float zScale = ((rand() % 100) / 200.0f); 
 
 		SceneNode* transformNode = new TransformNode(generateUuid(), glm::mat4(
 			xScale, 0, 0, 0,
@@ -272,24 +275,40 @@ int main() {
 	double timeStep = 1.0 / 60.0;
 	double timeOld = 0;
 
+	int renderLightTimer = 0;
+	int modeTimer = 0;
 	//gameloop
 	while (!input->esc && glfwWindowShouldClose(renderer->getWindow()) == 0) {
 		input->update(renderer->getWindow());
 
 		if (input->renderLights) {
-			renderLights = !renderLights;
+			renderLightTimer++;
+			if (renderLightTimer > 2) {
+				renderLights = !renderLights;
+				renderLightTimer = 0;
+			}
+		}
+		else {
+			renderLightTimer = 0;
 		}
 		if (input->renderMode) {
-			forwardRender = !forwardRender;
+			modeTimer++;
+			if (modeTimer > 2) {
+				forwardRender = !forwardRender;
+				modeTimer = 0;
+			}
+		}
+		else {
+			modeTimer = 0;
 		}
 		if (input->intUp) {
-			intensity += 0.1;
+			intensity += 0.01;
 			for (LightNode* light : lights) {
 				light->setIntensity(intensity);
 			}
 		}
 		if (input->intDown) {
-			intensity -= 0.1;
+			intensity -= 0.01;
 			for (LightNode* light : lights) {
 				light->setIntensity(intensity);
 			}
