@@ -14,10 +14,11 @@ DeferredShaderProgram::~DeferredShaderProgram()
 
 void DeferredShaderProgram::loadUniformLocations()
 {
-	locationPosition = glGetUniformLocation(programId, "gPosition");
-	locationNormal = glGetUniformLocation(programId, "gNormal");
-	locationAlbedo = glGetUniformLocation(programId, "gAlbedoSpec");
+	locationPosition = glGetUniformLocation(programId, "pos");
+	locationNormal = glGetUniformLocation(programId, "normal");
+	locationAlbedo = glGetUniformLocation(programId, "texture");
 	locationViewPos = glGetUniformLocation(programId, "viewPos");
+	locationAttenuation = glGetUniformLocation(programId, "attenuationOn");
 }
 
 void DeferredShaderProgram::fillUniformLocation(MeshNode* node, std::vector<LightNode*> lights)
@@ -33,6 +34,7 @@ void DeferredShaderProgram::fillUniformLocation(MeshNode* node, std::vector<Ligh
 	}
 	glm::vec3 pos = node->getPlayerPosition();
 	glUniform3f(locationViewPos, pos.x, pos.y, pos.z);
+	glUniform1i(locationAttenuation, node->getAttenuation());
 }
 
 void DeferredShaderProgram::fillUniformLocation(Framebuffer* framebuffer)
@@ -57,31 +59,19 @@ void DeferredShaderProgram::useLights(std::vector<LightNode*> lights)
 		std::stringstream position;
 		position << "lights[";
 		position << i;
-		position << "].Position";
+		position << "].position";
 		GLuint positionLoc = glGetUniformLocation(programId, position.str().c_str());
 		glUniform3f(positionLoc, lights.at(i)->getPosition().x, lights.at(i)->getPosition().y, lights.at(i)->getPosition().z);
 		std::stringstream color;
 		color << "lights[";
 		color << i;
-		color << "].Color";
+		color << "].color";
 		GLuint colorLoc = glGetUniformLocation(programId, color.str().c_str());
 		glUniform3f(colorLoc, lights.at(i)->getColor().x, lights.at(i)->getColor().y, lights.at(i)->getColor().z);
-		std::stringstream linear;
-		linear << "lights[";
-		linear << i;
-		linear << "].Linear";
-		GLuint linearLoc = glGetUniformLocation(programId, linear.str().c_str());
-		glUniform1f(linearLoc, 0.7);
-		std::stringstream quadratic;
-		quadratic << "lights[";
-		quadratic << i;
-		quadratic << "].Quadratic";
-		GLuint quadraticLoc = glGetUniformLocation(programId, quadratic.str().c_str());
-		glUniform1f(quadraticLoc, 0.1);
 		std::stringstream intensity;
 		intensity << "lights[";
 		intensity << i;
-		intensity << "].Intensity";
+		intensity << "].intensity";
 		GLuint intensityLoc = glGetUniformLocation(programId, intensity.str().c_str());
 		glUniform1f(intensityLoc, lights.at(i)->getIntensity());
 		std::stringstream valid;

@@ -59,6 +59,8 @@ public:
 	
 	void setLightSet(int i);
 	int getLightSet();
+	bool getAttenuation() { return attenuationOn; }
+	void setAttenuationOn(bool val) { attenuationOn = val; }
 
 protected:
 	ShaderProgram* shaderProgram;
@@ -88,6 +90,7 @@ protected:
 	Texture* activeTexture;
 	Texture* myTexture;
 	bool textureInit;
+	bool attenuationOn;
 
 	const MeshLoadInfo::LoadInfo* loadInfo;
 	

@@ -42,4 +42,6 @@ public:
 	static const LoadInfo* TABLE;
 	static const LoadInfo* CUBE_DEFERRED;
 	static const LoadInfo* CUBE_FORWARD;
+	static const LoadInfo* PLANE_DEFERRED;
+	static const LoadInfo* PLANE_FORWARD;
 };

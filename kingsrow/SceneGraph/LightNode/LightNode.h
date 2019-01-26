@@ -13,6 +13,7 @@ public:
 
 	glm::vec3 getPosition();
 	GLfloat getIntensity();
+	void setIntensity(GLfloat val) { intensity = val;  }
 	glm::vec3 getColor();
 	LightType getLightType();
 	virtual glm::vec3 getDirection() = 0;

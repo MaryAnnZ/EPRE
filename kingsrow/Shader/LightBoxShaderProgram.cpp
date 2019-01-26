@@ -14,9 +14,9 @@ LightBoxShaderProgram::~LightBoxShaderProgram()
 
 void LightBoxShaderProgram::loadUniformLocations()
 {
-	locationModel = glGetUniformLocation(programId, "model");
-	locationView = glGetUniformLocation(programId, "view");
-	locationProjection = glGetUniformLocation(programId, "projection");
+	locationModel = glGetUniformLocation(programId, "M");
+	locationView = glGetUniformLocation(programId, "V");
+	locationProjection = glGetUniformLocation(programId, "P");
 	locationLightColor = glGetUniformLocation(programId, "lightColor");
 }
 

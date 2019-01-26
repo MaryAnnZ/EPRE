@@ -65,7 +65,7 @@ int Renderer::init(int viewPortResX, int viewPortResY)
 	
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 
-	glClearColor(0.8f, 0.9f, 1.0f, 0.0f);
+	glClearColor(0.3f, 0.3f, 0.3f, 0.0f);
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);

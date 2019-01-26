@@ -11,11 +11,11 @@ GBufferShaderProgram::~GBufferShaderProgram()
 
 void GBufferShaderProgram::loadUniformLocations()
 {
-	locationModel = glGetUniformLocation(programId, "model");
-	locationView = glGetUniformLocation(programId, "view");
-	locationProjection = glGetUniformLocation(programId, "projection");
-	locationDiffuseTexture = glGetUniformLocation(programId, "texture_diffuse1");
-	locationSpecularTexture = glGetUniformLocation(programId, "texture_specular1");
+	locationModel = glGetUniformLocation(programId, "M");
+	locationView = glGetUniformLocation(programId, "V");
+	locationProjection = glGetUniformLocation(programId, "P");
+	locationDiffuseTexture = glGetUniformLocation(programId, "myTextureSamplerDiff");
+	locationSpecularTexture = glGetUniformLocation(programId, "myTextureSamplerSpec");
 }
 
 void GBufferShaderProgram::fillUniformLocation(Framebuffer * framebuffer)
@@ -38,6 +38,8 @@ void GBufferShaderProgram::bindTextures(MeshNode * node)
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, node->getTexture()->getTextureID());
 	glUniform1i(locationDiffuseTexture, 0);
-	//TODO: Specual texture?
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, node->getTexture()->getTextureID());
+	glUniform1i(locationSpecularTexture, 1);
 }
 

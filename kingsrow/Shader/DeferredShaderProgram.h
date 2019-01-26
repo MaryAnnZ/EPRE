@@ -18,6 +18,6 @@ private:
 	void bindTextures(MeshNode* node);
 
 	GLuint locationPosition, locationNormal, locationAlbedo;
-	GLuint locationViewPos;
+	GLuint locationViewPos, locationAttenuation;
 };
 

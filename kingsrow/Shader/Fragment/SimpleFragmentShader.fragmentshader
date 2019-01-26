@@ -40,6 +40,7 @@ void main(){
 	vec3 viewPos = vec3((vertexPosition_cameraspace, 1.0));
 	vec3 E = normalize(viewPos);
 
+	color += MaterialAmbientColor;
 	for (int i = 0; i < NR_LIGHTS; i++) {
 	if (!lights[i].valid) {
 		break;
@@ -79,7 +80,7 @@ void main(){
 
 		color += 
 			// Ambient : simulates indirect lighting
-			MaterialAmbientColor +
+			//MaterialAmbientColor +
 			// Diffuse : "color" of the object
 			MaterialDiffuseColor * LightColor * LightPower * cosTheta / (distance*distance) +
 			// Specular : reflective highlight, like a mirror
