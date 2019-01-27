@@ -1,9 +1,9 @@
 #Deferred Shading (0), Forward Shading(1)
-0
+1
 #NR_LIGHT (<= 100)
-25
+15
 #Light intensity(float)
-0.001
+1
 #NR_OBJECTS
 15
 #Viewport width
@@ -11,7 +11,7 @@
 #Viewport height
 1080
 #Render lights (1) - in case of deferred shading
-0
+1
 #Attenuation on/off
 0
 
